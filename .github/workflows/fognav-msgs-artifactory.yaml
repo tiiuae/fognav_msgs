@@ -2,9 +2,9 @@ name: Push fognav_msgs to Artifactory
 
 on:
   push:
-    branches: [ main ]
+    branches: [ humble ]
   pull_request:
-    branches: [ main ]
+    branches: [ humble ]
   workflow_dispatch:
 
 jobs:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ros2_distro: [galactic]
+        ros2_distro: [humble]
     steps:
       - name: Checkout fognav_msgs
         uses: actions/checkout@v2
@@ -53,7 +53,7 @@ jobs:
       - name: Upload to Artifactory
         env:
           ARTIFACTORY_REPO: ssrc-deb-public-local
-          DISTRIBUTION: focal
+          DISTRIBUTION: jammy
           COMPONENT: fog-sw
           ARCHITECTURE: amd64
           BUILD_NAME: fognav_msgs

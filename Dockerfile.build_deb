@@ -1,5 +1,4 @@
-
-FROM ghcr.io/tiiuae/fog-ros-baseimage:builder-ae21266
+FROM ghcr.io/tiiuae/fog-ros-baseimage-builder:humble_builder
 ARG GIT_RUN_NUMBER
 ARG GIT_COMMIT_HASH
 ARG GIT_VERSION_STRING
@@ -17,7 +16,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     python3-bloom \
     fakeroot \
     dh-make \
-    ros-galactic-geographic-msgs \
+    ros-${ROS_DISTRO}-geographic-msgs \
     && rm -rf /var/lib/apt/lists/*
 
 RUN source /packaging/build.sh && rosdep_init_update_and_install

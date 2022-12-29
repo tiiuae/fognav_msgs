@@ -1,0 +1,28 @@
+
+FROM ghcr.io/tiiuae/fog-ros-baseimage:builder-ae21266
+ARG GIT_RUN_NUMBER
+ARG GIT_COMMIT_HASH
+ARG GIT_VERSION_STRING
+
+RUN echo $GIT_RUN_NUMBER
+RUN echo $GIT_COMMIT_HASH
+RUN echo $GIT_VERSION_STRING
+
+WORKDIR /main_ws/src/
+COPY . /main_ws/src/.
+
+# # Install build dependencies
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    curl \
+    python3-bloom \
+    fakeroot \
+    dh-make \
+    ros-galactic-geographic-msgs \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN source /packaging/build.sh && rosdep_init_update_and_install
+# this:
+# 1) builds the application
+# 2) packages the application as .deb & writes it to /main_ws/build_output/
+RUN /packaging/build-and-package-as-deb.sh -o /main_ws/build_output -b $GIT_RUN_NUMBER -g $GIT_COMMIT_HASH -v $GIT_VERSION_STRING
+

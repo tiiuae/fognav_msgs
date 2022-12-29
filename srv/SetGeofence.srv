@@ -1,0 +1,5 @@
+#Determine if the current path is still valid
+std_msgs/Header header # timestamped
+fognav_msgs/Geofence[] geofences
+---
+bool success

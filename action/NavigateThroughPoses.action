@@ -1,0 +1,18 @@
+#goal definition
+geometry_msgs/PoseStamped[] poses
+fognav_msgs/Task[] tasks
+string behavior_tree
+bool not_auto_land
+bool loop_tasks # If true, after all complete, it will start from the first again by marking all as not started
+---
+#result definition
+std_msgs/Empty result
+fognav_msgs/TaskMetaData[] tasks_metadata_result
+---
+geometry_msgs/PoseStamped current_pose
+builtin_interfaces/Duration navigation_time
+builtin_interfaces/Duration estimated_time_remaining
+int16 number_of_recoveries
+float32 distance_remaining
+int16 number_of_poses_remaining
+fognav_msgs/TaskMetaData[] tasks_metadata_feedback

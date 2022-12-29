@@ -1,0 +1,6 @@
+#Determine if dynamic bumper should be activated
+
+float32 checking_radius
+---
+bool is_clear
+uint8 max_costmap_value

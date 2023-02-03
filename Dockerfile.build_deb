@@ -1,4 +1,4 @@
-FROM ghcr.io/tiiuae/fog-ros-baseimage-builder:humble_builder
+FROM ghcr.io/tiiuae/fog-ros-baseimage-builder:dp-4266_humble_upgrade
 ARG GIT_RUN_NUMBER
 ARG GIT_COMMIT_HASH
 ARG GIT_VERSION_STRING

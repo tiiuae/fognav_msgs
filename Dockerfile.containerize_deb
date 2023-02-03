@@ -1,0 +1,3 @@
+FROM busybox
+
+COPY ./bin/build_output/. /artifacts

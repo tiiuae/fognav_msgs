@@ -4,6 +4,9 @@ fognav_msgs/Task[] tasks
 string behavior_tree
 bool not_auto_land
 bool loop_tasks # If true, after all complete, it will start from the first again by marking all as not started
+bool abort_on_failure
+int16 wait_secs_for_next_goal # If 0, no wait. <=-1, wait indefinetely. >0, wait for the specified number of seconds
+bool reset_previous_state # If true, the backlog inside the navigator will be reset, abort the ongoing task if exists, then start from beginning
 ---
 #result definition
 std_msgs/Empty result

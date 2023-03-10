@@ -1,0 +1,82 @@
+name: Push fognav_msgs to Riscv64 Artifactory Debian Repo
+
+on:
+  push:
+    branches: [ riscv64_support ]
+  workflow_dispatch:
+
+jobs:
+  tii-deb-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ros2_distro: [galactic]
+    steps:
+      - name: Checkout drone-yocto repo
+        uses: actions/checkout@v3
+        with:
+          repository: tiiuae/drone-yocto
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: drone-yocto
+
+      - name: Checkout fognav_msgs repo
+        uses: actions/checkout@v3
+        with:
+          path: fognav_msgs
+
+      - name: Create new fognav_msgs recipe in drone-yocto
+        env:
+          ROS: 1
+          ROS_DISTRO: ${{ matrix.ros2_distro }}
+          PACKAGE_NAME: fognav_msgs
+        run: |
+          set -eux
+          pushd fognav_msgs > /dev/null
+          ls
+          popd > /dev/null
+
+          pushd drone-yocto > /dev/null
+          ls
+          popd > /dev/null
+      - name: Upload build
+        uses: actions/upload-artifact@v2
+        with:
+          name: fognav_msgs_riscv64
+          path: drone-yocto/build-riscv/tmp-glibc/deploy/deb/riscv64/fognav-msgs*.deb
+          retention-days: 1
+
+  artifactory:
+    runs-on: ubuntu-latest
+    needs: tii-deb-build
+    if: github.event_name == 'push'
+    steps:
+      - name: Download builds
+        uses: actions/download-artifact@v2
+        with:
+          name: fognav_msgs_riscv64
+          path: bin/build_output
+      - uses: jfrog/setup-jfrog-cli@v2
+        env:
+          JF_ARTIFACTORY_1: ${{ secrets.ARTIFACTORY_TOKEN }}
+      - name: Upload to Artifactory
+        env:
+          ARTIFACTORY_REPO: ssrc-deb-public-local
+          DISTRIBUTION: custom
+          COMPONENT: saluki
+          ARCHITECTURE: riscv64
+          BUILD_NAME: fognav_msgs-riscv64
+          CI: true
+        run: |
+          set -exu
+          jfrog rt ping
+          cd bin/build_output
+          for pkg in *.deb
+          do
+            jfrog rt u --deb "$DISTRIBUTION/$COMPONENT/$ARCHITECTURE" \
+                       --target-props COMMIT="$GITHUB_SHA" \
+                       --build-name "$BUILD_NAME" \
+                       --build-number "$GITHUB_SHA" \
+                       "$pkg" \
+                       "$ARTIFACTORY_REPO/riscv64/riscv64/$pkg"
+          done

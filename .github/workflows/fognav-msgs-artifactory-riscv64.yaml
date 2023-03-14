@@ -62,7 +62,7 @@ jobs:
       - name: Run yocto distro build
         run: |
           pushd drone-yocto > /dev/null
-          sudo apt install -y chrpath diffstat
+          sudo apt install -y chrpath diffstat && sudo rm -rf /var/lib/apt/lists/*
           TEMPLATECONF=meta-ssrc-ros2/conf/saluki-template source oe-init-build-env build-riscv
           cd .. # or cd to main dir
           DISTRO=drone bitbake fognav-msgs
@@ -85,7 +85,7 @@ jobs:
         with:
           name: fognav_msgs_riscv64
           path: bin/build_output
-      - uses: jfrog/setup-jfrog-cli@v2
+      - uses: jfrog/setup-jfrog-cli@v3
         env:
           JF_ARTIFACTORY_1: ${{ secrets.ARTIFACTORY_TOKEN }}
       - name: Upload to Artifactory

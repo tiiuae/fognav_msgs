@@ -12,33 +12,62 @@ jobs:
       matrix:
         ros2_distro: [galactic]
     steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 512
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+          remove-haskell: 'true'
+          remove-android: 'true'
+
       - name: Checkout drone-yocto repo
         uses: actions/checkout@v3
         with:
           repository: tiiuae/drone-yocto
+          ref: fog_hyper_supports
           submodules: recursive
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ssh-key: ${{ secrets.ACCESS_REPO_TOKEN }}
           path: drone-yocto
 
-      - name: Checkout fognav_msgs repo
+      - name: Checkout fognav\_msgs repo
         uses: actions/checkout@v3
         with:
           path: fognav_msgs
 
-      - name: Create new fognav_msgs recipe in drone-yocto
+      - name: Modify fognav_msgs recipe in drone-yocto
         env:
-          ROS: 1
-          ROS_DISTRO: ${{ matrix.ros2_distro }}
-          PACKAGE_NAME: fognav_msgs
+          RECIPE_FILE_PATH: meta-ssrc-ros2/recipes-app/fog-navigation-lite
+          RECIPE_FILE_PATTERN: fognav-msgs_*-0.bb
         run: |
           set -eux
           pushd fognav_msgs > /dev/null
-          ls
+          # Get current fognav_msgs version
+          VERSION=$(grep '<version>' package.xml | sed 's/<\/\?version>//g' | awk '{$1=$1};1')
           popd > /dev/null
 
           pushd drone-yocto > /dev/null
-          ls
+          # Create a recipe for fognav_msgs version X
+          mkdir $RECIPE_FILE_PATH/tmp
+          mv $RECIPE_FILE_PATH/$RECIPE_FILE_PATTERN $RECIPE_FILE_PATH/tmp/fognav-msgs_$VERSION-0.bb
+          mv $RECIPE_FILE_PATH/tmp/$RECIPE_FILE_PATTERN $RECIPE_FILE_PATH/
+          rm -rf $RECIPE_FILE_PATH/tmp
+          # Fix src branch
+          sed -i "s/=main/=${GITHUB_REF##*/}/g" $RECIPE_FILE_PATH/$RECIPE_FILE_PATTERN
+          # Fix SRCREV
+          sed -i "s/SRCREV.*/SRCREV = \"$GITHUB_SHA\"/" $RECIPE_FILE_PATH/$RECIPE_FILE_PATTERN
+          cat $RECIPE_FILE_PATH/$RECIPE_FILE_PATTERN
           popd > /dev/null
+
+      - name: Run yocto distro build
+        run: |
+          pushd drone-yocto > /dev/null
+          sudo apt install -y chrpath diffstat
+          TEMPLATECONF=meta-ssrc-ros2/conf/saluki-template source oe-init-build-env build-riscv
+          cd .. # or cd to main dir
+          DISTRO=drone bitbake fognav-msgs
+          popd > /dev/null
+
       - name: Upload build
         uses: actions/upload-artifact@v2
         with:

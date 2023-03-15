@@ -27,10 +27,10 @@ jobs:
           repository: tiiuae/drone-yocto
           ref: fog_hyper_supports
           submodules: recursive
-          ssh-key: ${{ secrets.ACCESS_REPO_TOKEN }}
+          token: ${{ secrets.ACCESS_REPO_TOKEN }}
           path: drone-yocto
 
-      - name: Checkout fognav\_msgs repo
+      - name: Checkout fognav_msgs repo
         uses: actions/checkout@v3
         with:
           path: fognav_msgs

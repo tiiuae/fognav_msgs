@@ -85,7 +85,6 @@ jobs:
           name: deb-packages
           path: ./output_dir/*.deb
 
-jobs:
   upload-to-digitalocean:
     runs-on: ubuntu-latest
     needs: build-and-push

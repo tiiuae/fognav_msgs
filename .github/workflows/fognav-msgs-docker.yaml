@@ -43,7 +43,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Container metadata for runtime base image
+      - name: Container metadata for tii-fognav-msgs
         id: meta # referenced from later step
         uses: docker/metadata-action@v5
         with:
@@ -102,5 +102,5 @@ jobs:
       - name: Upload to digitalocean
         run: |
           echo "Placeholder"
-          ls -la ./deb-packages
+          ls -R 
 

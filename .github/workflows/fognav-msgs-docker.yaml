@@ -76,7 +76,7 @@ jobs:
 
       - name: Create container and copy deb packages
         run: |
-          # platforms=("amd64" "arm64")
+          platforms=("amd64" "arm64")
           for platform in "${platforms[@]}"; do
             docker create -ti --name "fognav-msgs-build-temp-$platform" --platform=linux/$platform $(echo "${{ steps.meta.outputs.tags }}" | head -1) bash
             docker cp "fognav-msgs-build-temp-$platform:/output_dir/." ./output_dir

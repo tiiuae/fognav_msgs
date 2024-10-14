@@ -26,5 +26,5 @@ RUN /main_ws/src/package.sh -b $GIT_RUN_NUMBER -g $GIT_COMMIT_HASH -v $GIT_VERSI
 RUN mkdir -p /output_dir && cp /main_ws/*.deb /output_dir/
 
 FROM alpine:edge
-COPY --from=builder /output_dir/*.deb /output_dir/
+COPY --from=builder /output_dir/*.deb /artifacts/
 CMD ["sh"]

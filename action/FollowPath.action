@@ -1,5 +1,6 @@
 #goal definition
 nav_msgs/Path path
+TaskMetaData metadata
 string controller_id
 string goal_checker_id
 bool avoidance_path

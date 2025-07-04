@@ -8,6 +8,8 @@ uint8 geofence_type
 geometry_msgs/Point[] corners # [POINTS] 3> points, local or gps
 geometry_msgs/Point origin # [CIRCLE/SQUARE]
 float32 radius # [CIRCLE/SQUARE] in meters. if x meters, square will be 2x by 2x
+float32 altitude_floor # above home position in meters
+float32 altitude_ceiling # above home position in meters
 
 bool no_fly_zone # If false, the inner area is allowed, if not, outer side
 bool altitude_absolute # If false, it will be from the launch altitude

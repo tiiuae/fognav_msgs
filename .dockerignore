@@ -1,0 +1,14 @@
+################################################################################
+# Repo
+
+.circleci/
+.github/
+.vscode/
+.dockerignore
+.gitignore
+**Dockerfile
+**.Dockerfile
+Dockerfile.**
+Dockerfile
+bin
+build_deb.sh
